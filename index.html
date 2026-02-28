@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para mis Mejores Amigos 💜</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #000; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+        }
+        
+        /* Capa de las estrellas (Canvas) */
+        canvas { 
+            display: block; 
+            touch-action: none; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 10; 
+            cursor: crosshair; 
+        }
+        
+        /* Contenido de fondo (lo que se descubre) */
+        #background-content {
+            position: absolute; 
+            width: 100%; 
+            height: 100%;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center; 
+            /* Fondo de amor: Morado profundo con toque rojizo */
+            background: radial-gradient(circle, #2e0b1a 0%, #05010a 100%);
+            color: white; 
+            text-align: center; 
+            z-index: 1;
+        }
+
+        .photo-frame {
+            width: 280px; 
+            height: 280px;
+            border: 5px solid #ff79c6; /* Rosa/Morado brillante */
+            border-radius: 50%;
+            overflow: hidden; 
+            box-shadow: 0 0 60px rgba(255, 121, 198, 0.6);
+            margin-bottom: 25px; 
+            background: #1a1a1a;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .photo-frame img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+
+        h1 { 
+            font-size: 26px; 
+            text-shadow: 0 0 15px #ff79c6; 
+            padding: 0 20px; 
+            margin: 10px 0;
+        }
+
+        .heart {
+            color: #ff79c6;
+            font-size: 30px;
+            margin-top: 10px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="background-content">
+        <div class="photo-frame">
+            <img src="https://i.imgur.com/bC3Q1xi.jpeg" alt="Nuestra Foto">
+        </div>
+        <h1>¡SON LOS MEJORES AMIGOS! 💜</h1>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h;
+
+        function init() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            
+            // Cubrimos la pantalla con el "polvo de estrellas"
+            ctx.fillStyle = '#0d021a';
+            ctx.fillRect(0, 0, w, h);
+
+            // Dibujamos 600 estrellas
+            for(let i=0; i<600; i++) {
+                ctx.fillStyle = Math.random() > 0.3 ? '#bd93f9' : '#ffffff';
+                ctx.beginPath();
+                ctx.arc(Math.random()*w, Math.random()*h, Math.random()*1.5, 0, Math.PI*2);
+                ctx.fill();
+            }
+
+            // Texto guía
+            ctx.font = "bold 18px sans-serif";
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.fillText("✨ Limpia la galaxia para ver la sorpresa ✨", w/2, h/2 + 40);
+        }
+
+        function scratch(e) {
+            if (e.cancelable) e.preventDefault();
+            const pos = e.touches ? e.touches[0] : e;
+            const x = pos.clientX;
+            const y = pos.clientY;
+
+            ctx.globalCompositeOperation = 'destination-out';
+            
+            // Efecto de borrado suave
+            let grd = ctx.createRadialGradient(x, y, 0, x, y, 40);
+            grd.addColorStop(0, "rgba(0,0,0,1)");
+            grd.addColorStop(1, "rgba(0,0,0,0)");
+            
+            ctx.fillStyle = grd;
+            ctx.beginPath();
+            ctx.arc(x, y, 40, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        canvas.addEventListener('mousemove', (e) => { if(e.buttons === 1) scratch(e); });
+        canvas.addEventListener('mousedown', scratch);
+        canvas.addEventListener('touchstart', scratch, {passive: false});
+        canvas.addEventListener('touchmove', scratch, {passive: false});
+
+        window.addEventListener('resize', init);
+        window.onload = init;
+    </script>
+</body>
+</html>
